@@ -11,7 +11,7 @@
       <div id="eventSelect" style="float: left;"></div>
       <div id="by" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">by</div>
       <div id="propSelect1" style="float: left; display: none;"></div>
-      <div id="and" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">by</div>
+      <div id="and" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">and</div>
       <div id="propSelect2" style="float: left; display: none;"></div>
       <div id="datesSelect" style="float: right;"></div>
       <div style="clear: both;"></div>
@@ -38,7 +38,7 @@
             limit: 25
           });
 
-          MP.api.query('segmentation/multiseg', params).done(function(results) {
+          MP.api.query('api/2.0/segmentation/multiseg', params).done(function(results) {
             console.log(results);
           });
         }
