@@ -10,41 +10,53 @@
     <div class="mixpanel-platform-section">
       <div id="eventSelect" style="float: left;"></div>
       <div id="by" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">by</div>
-      <div id="propSelect" style="float: left;"></div>
-      <div id="dateSelect" style="float: right;"></div>
+      <div id="propSelect1" style="float: left; display: none;"></div>
+      <div id="and" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">by</div>
+      <div id="propSelect2" style="float: left; display: none;"></div>
+      <div id="datesSelect" style="float: right;"></div>
       <div style="clear: both;"></div>
       <div id="graph"></div>
     </div>
     <div id="table"></div>
     <script>
       var eventSelect = $('#eventSelect').MPEventSelect();
-      var propSelect  = $('#propSelect').MPPropertySelect();
-      var dateSelect  = $('#dateSelect').MPDatepicker();
-      var eventGraph  = $('#graph').MPChart({chartType: 'line'});
-      var eventTable  = $('#table').MPTable({
-        showPercentages: true,
-        firstColHeader: 'Event'
-      });
+      var propSelect1 = $('#propSelect1').MPPropertySelect();
+      var propSelect2 = $('#propSelect2').MPPropertySelect();
+      var datesSelect = $('#datesSelect').MPDatepicker();
 
       var runQuery = function() {
-        var eventName = eventSelect.MPEventSelect('value'),
-            propName  = propSelect.MPPropertySelect('value'),
-            dateRange = dateSelect.MPDatepicker('value');
+        var event = eventSelect.MPEventSelect('value'),
+            prop1 = propSelect1.MPPropertySelect('value'),
+            prop2 = propSelect2.MPPropertySelect('value'),
+            dates = datesSelect.MPDatepicker('value');
 
-        if (eventName) {
-          MP.api.segment(eventName, propName, dateRange).done(function(results) {
-            eventGraph.MPChart('setData', results);
-            eventTable.MPTable('setData', results);
+        if (event && prop1 && prop2) {
+          var params = $.extend({}, dates, {
+            event: event,
+            inner: 'properties[' + prop1 + ']',
+            outer: 'properties[' + prop2 + ']',
+            limit: 25
+          });
+
+          MP.api.query('segmentation/multiseg', params).done(function(results) {
+            console.log(results);
           });
         }
       };
+
       eventSelect.on('change', function(e, eventName) {
-        propSelect.MPPropertySelect('setEvent', eventName);
-        $("#by").show();
+        propSelect1.MPPropertySelect('setEvent', eventName);
+        propSelect1.MPPropertySelect('setEvent', eventName);
+        $("#by, #propSelect1").show();
         runQuery();
       });
-      propSelect.on('change', runQuery);
-      dateSelect.on('change', runQuery);
+      propSelect1.on('change', function () {
+        $('#and, #propSelect2').show();
+        runQuery();
+      });
+      propSelect2.on('change', runQuery);
+      datesSelect.on('change', runQuery);
     </script>
   </body>
 </html>
+
